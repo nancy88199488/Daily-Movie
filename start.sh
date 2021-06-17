@@ -1,6 +1,8 @@
-export MOVIE_API_KEY='775bb229d0b691b8edca5f2b691f3356'
-export SECRET_KEY='kelvin'
+<<<<<<< HEAD
+
 
 export MAIL_USERNAME='kelvin.cheruiyot@moringaschool.com'
 export MAIL_PASSWORD='35207605'
-python3.8 manage.py server
+
+
+python3  manage.py server
