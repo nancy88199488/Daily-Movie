@@ -1,30 +1,45 @@
-from flask import render_template,request,redirect,url_for
+from app.models import FavoriteGenre
+from flask import render_template
+from flask.globals import request
+from flask.helpers import url_for
+from werkzeug.utils import redirect
 from . import main
-from ..requests import get_movies,get_movie,search_movie
-from .forms import ReviewForm
-from ..models import Review
+from ..requests import get_movies, get_genres, get_favorite_movies
+from flask_login import login_required
+from .. import db
 
-# Views
 @main.route('/')
 def index():
-    movies = Movie.query.all()
-    action = Movie.query.filter_by(category = "action").all()
-    comedy = Movie.query.filter_by(category = "comedy").all() 
-    drama = Movie.query.filter_by(category = "drama").all()
-    horror = Movie.query.filter_by(category = "horror").all()
-    return render_template('index.html', action=action, comedy=comedy ,drama=drama,horror=horror)
 
-@main.route('/create_new', methods=['POST', 'GET'])
+    popular_movies = get_movies('popular')
+    title='Home | MOTD'
+
+
+    return render_template('home.html', popular=popular_movies, title=title)
+
+@main.route('/genres', methods=['GET', 'POST'])
 @login_required
-def new_movie():
-    form = MovieForm()
-    if form.validate_on_submit():
-        title = form.title.data
-        post = form.post.data
-        category = form.category.data
-        user_id = current_user
-        new_movie_object = Movie(post=post,user_id=current_user._get_current_object().id,category=category,title=title)
-        new_movie_object.save_p()
+def genres():
+
+    title = 'Genres | MOTD'
+    genres = get_genres()
+
+    if request.method == 'POST':
+        FavoriteGenre.query.delete()
+        db.session.commit()
+        fav_genres = request.form.getlist('fav_genres')
+
+        i=0
+        while i < len(fav_genres):
+            for genre in genres:
+                if int(genre.id) == int(fav_genres[i]):
+                    selected_genre = FavoriteGenre(genre_id=int(genre.id), name=genre.name)
+                    db.session.add(selected_genre)
+                    db.session.commit()
+            i += 1
+            
+
         return redirect(url_for('main.index'))
-        
-    return render_template('create_movie.html', form = form)
+
+
+    return render_template('genres.html', title=title, genres = genres)

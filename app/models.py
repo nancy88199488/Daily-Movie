@@ -1,98 +1,85 @@
+from sqlalchemy.orm import backref, lazyload
 from . import db
-from werkzeug.security import generate_password_hash,check_password_hash
-from . import login_manager
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from . import login_manager
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(UserMixin,db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer,primary_key = True)
+    username = db.Column(db.String(255),index = True)
+    email = db.Column(db.String(255),unique = True,index = True)
+    bio = db.Column(db.String(255))
+    profile_pic_path = db.Column(db.String())
+    subscribed = db.Column(db.Boolean)
+    password_hash = db.Column(db.String(255))
+
+    genres = db.relationship('FavoriteGenre', backref='user', lazy='dynamic')
+
+    @property
+    def password(self):
+        raise AttributeError('You cannnot read the password attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
 
 
-#    movie class to define movie Objects
+    def verify_password(self,password):
+        return check_password_hash(self.password_hash,password)
+
+    def __repr__(self):
+        return f'User {self.username}'
+
+
 class Movie:
     '''
     Movie class to define Movie Objects
     '''
 
-    def __init__(self,id,title,overview,poster,vote_average,vote_count):
-        self.id =id
+    def __init__(self,movie_id,title,overview,poster,vote_average,vote_count, backdrop_path, genres, trailer):
+        self.movie_id =movie_id
         self.title = title
         self.overview = overview
         self.poster = "https://image.tmdb.org/t/p/w500/" + poster
         self.vote_average = vote_average
         self.vote_count = vote_count
+        self.backdrop_path= backdrop_path
+        self.genres = genres
+        self.trailer_url = trailer
 
+class Genre:
+    '''
+    Class to define genres.
+    '''
 
-#setting review class for users to give reviews for the movies the like
-class Review:
+    def __init__(self,id,name):
+        self.id = id
+        self.name = name
 
-    all_reviews = []
+class FavoriteGenre(db.Model):
 
-    def __init__(self,movie_id,title,imageurl,review):
-        self.movie_id = movie_id
-        self.title = title
-        self.imageurl = imageurl
-        self.review = review
+    __tablename__ = 'favorite_genres'
 
-
-    def save_review(self):
-        Review.all_reviews.append(self)
-
-
-    @classmethod
-    def clear_reviews(cls):
-        Review.all_reviews.clear()
-#checks on the reviews the have same movie id
-    @classmethod
-    def get_reviews(cls,id):
-
-        response = []
-
-        for review in cls.all_reviews:
-            if review.movie_id == id:
-                response.append(review)
-
-        return response
-
-
-# Initializing the database
-class User(db.Model,UserMixin):
-    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(300),unique=True,index=True)
-    email = db.Column(db.String(300))
-    subcriber_id = db.Column(db.Integer,db.ForeignKey('subscribers.id'))
-    password_hash = db.Column(db.String(255))
-    pass_secure = db.Column(db.String(255))
+    genre_id = db.Column(db.Integer)
+    name = db.Column(db.String(255))
 
-    @property
-    def password(self):
-            raise AttributeError('You cannot read the password attribute')
-
-    @password.setter
-    def password(self, password):
-            self.pass_secure = generate_password_hash(password)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
-    def verify_password(self,password):
-            return check_password_hash(self.pass_secure,password)
-
-   
-    def __repr__(self):
-        return f'User {self.username}'
-
-
-class Subscribe(db.Model):
-     __tablename__ = 'subscribers'   
-
-     id = db.Column(db.Integer, primary_key = True)    
-     name = db.Column(db.String(255))
-     users = db.relationship('User',backref = 'subscriber',lazy="dynamic")
-
-
-     def __repr__(self):
-         return f'User {self.name}'
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-      
-
-
-    
+class Trailer:
+    '''
+    Class to store trailer details.
+    '''
+    def __init__(self, id, key, name, site, trailer_type):
+        self.id = id
+        self.link = 'https://www.youtube.com/watch?v=' + key
+        self.name = name
+        self.site = site
+        self.trailer_type = trailer_type

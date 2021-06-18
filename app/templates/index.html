@@ -1,46 +1,12 @@
-{% extends 'base.html'%}
-{% import 'macro.html' as macro%}
-
-<!-- Styles block -->
-
-{% block styles%}
-    {{ super() }}
-    <link rel="stylesheet" href="{{url_for('static',filename='css/index.css')}}">
-{% endblock %}
-<!-- Content block -->
-{% block content %}
-
+{% extends 'base.html' %} {% block main %} {{ super() }}
 <div class="container">
-    <form>
-        <input type="text" name="movie_query" placeholder="Search for a Movie" class="form-control">
-        <input type="submit"  value="Submit" class="btn btn-default">
-    </form>
-
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col">
+                {% block space %}{% endblock %}
+                {% block error %}{% endblock %}
+            </div>
+        </div>
+    </div>
 </div>
-<div class="row">
-
-<!-- Upcoming movie  -->
-<h3> Comedy Movies </h3>
-<ul>
-    {{ macro.displayMovieList(comedy)}}
-</ul>
-<!-- Now showing movie -->
-<h3> Horror Movies</h3>
-<ul>
-    {{ macro.displayMovieList(horror)}}
-</ul>
-
-<h3> Drama Movies</h3>
-<ul>
-    {{ macro.displayMovieList(drama)}}
-</ul>
-
-<h3> Action Movies</h3>
-<ul>
-    {{ macro.displayMovieList(action)}}
-</ul>
-
-</div>
-
-{% endblock%}
-
+{% endblock %}

@@ -1,4 +1,4 @@
-<!-- Displaying movie list macro  -->
+<!-- Displaying movie list macro 
 {% macro displayMovieList(movie_list) %}
 
     {% for movie in movie_list %}
@@ -15,7 +15,7 @@
 {% endmacro %}
 
 <!-- Displaying reviews macro -->
-{% macro displayReviews(review_list) %}
+<!-- {% macro displayReviews(review_list) %}
 
     {% for review in review_list %}
 
@@ -31,4 +31,21 @@
     </div>
 
     {% endfor %}
+{% endmacro %}  -->
+
+{% macro displayMovieList(movie_list) %}
+
+    {% for movie in movie_list %}
+        <div class="movie">
+					<div class="movie-poster">
+						<img src="{{ movie.poster }}" />
+					</div>
+					<div class="movie-name my-2">
+						<h4>{{ movie.title | truncate(13) }}</h4>
+                        <p><em><a href="{{ movie.trailer_url }}" target="_blank">View Trailer</a></em></p>
+					</div>
+				</div>
+
+    {% endfor %}
+
 {% endmacro %}
