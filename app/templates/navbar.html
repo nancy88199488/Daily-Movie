@@ -1,4 +1,4 @@
-<div class="navbar navbar-inverse" role="navigation">
+<!-- <div class="navbar navbar-inverse" role="navigation">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -25,4 +25,35 @@
     </div>
 
   </div>
+</div> -->
+
+<div class="container-fluid navbar">
+	<div class="navdiv">
+		<a href="{{ url_for('main.index') }}">
+            <div class="logodiv mx-4">
+
+			<div class="name mx-1">MOTD</div>
+		</div>
+        </a>
+		<div class="logout-div">
+            <div class="genres mx-4">
+                    <h4><a href="{{url_for('main.genres')}}">Genres</a></h4>
+                </div>
+			{% if current_user.is_authenticated %}
+                <div class="logged_in_user mx-3">
+                    <h3>{{ current_user.username }}</h3></div>
+                <div class="logout-btn">
+				<form action="{{url_for('auth.logout')}}">
+                    <button type="submit" class="btn logout">Log Out</button>
+                </form>
+			</div>
+            {% else %}
+            <div class="logout-btn">
+				<form action="{{url_for('auth.login')}}">
+                    <button type="submit" class="btn logout">Log In</button>
+                </form>
+			</div>
+            {% endif %}
+		</div>
+	</div>
 </div>

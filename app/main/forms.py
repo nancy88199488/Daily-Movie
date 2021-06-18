@@ -8,6 +8,6 @@ class UpdateProfile(FlaskForm):
 
 class SubscribeForm(FlaskForm):
     title = StringField('Title', validators=[Required()])
-    category = SelectField('Category', choices=[('Action','Action'),('Comedy','Comedy'),('Drama','Drama')('Horror','Horror')],validators=[Required()])
+    # category = SelectField('Category', choices=[('Action','Action'),('Comedy','Comedy'),('Drama','Drama')('Horror','Horror')],validators=[Required()])
     submit = SubmitField('Movie')
 
